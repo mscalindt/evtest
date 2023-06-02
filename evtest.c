@@ -56,6 +56,7 @@
 #include <signal.h>
 #include <limits.h>
 #include <sys/time.h>
+#include <time.h>
 #include <sys/types.h>
 
 #ifndef input_event_sec
@@ -1371,8 +1372,14 @@ int main (int argc, char **argv)
 	if (optind < argc)
 		device = argv[optind++];
 
-	if (mode == MODE_CAPTURE)
+	if (mode == MODE_CAPTURE) {
+		/* sleep for a short time to allow key release events to be
+		 * processed. */
+		const struct timespec delay = {0, 100000000L};  // 0.1 seconds.
+		nanosleep(&delay, NULL);
+
 		return do_capture(device, grab_flag);
+	}
 
 	if ((argc - optind) < 2) {
 		fprintf(stderr, "Query mode requires device, type and key parameters\n");
