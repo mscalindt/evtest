@@ -55,6 +55,7 @@
 #include <ctype.h>
 #include <signal.h>
 #include <limits.h>
+#include <time.h>
 #include <sys/time.h>
 #include <sys/types.h>
 
@@ -1233,6 +1234,10 @@ static int do_capture(const char *device, int grab_flag)
 		goto error;
 
 	printf("Testing ... (interrupt to exit)\n");
+
+	/* sleep for 0.1s to process pending key release events. */
+	const struct timespec delay = {0, 100000000L};
+	nanosleep(&delay, NULL);
 
 	if (test_grab(fd, grab_flag))
 	{
